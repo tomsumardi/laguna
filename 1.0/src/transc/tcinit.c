@@ -32,8 +32,6 @@
 static tc_gd_thread_ctxt_t       g_ThdCntx;
 extern void * tcplane_snmp(void * context);
 
-extern void transcUsageMsgPrint(void);
-
 /**************** PRIVATE Functions **********************/
 /***************************************************************************
  * function: _tcInitSharedQ
@@ -1143,11 +1141,6 @@ tresult_t tcInitReadFromConsole(tc_ldcfg_t* pCfg, S32 argc, CHAR*  argv[])
             _result = ESUCCESS;
         for( _i = 1; _i < argc; ++_i )
         {
-			if(!strcmp(argv[_i], "-help"))
-			{
-				transcUsageMsgPrint();
-				exit(0);
-			}
             if( !strcmp( argv[_i], "-i" ) )
             {
                 ccur_strlcpy(pCfg->tConfigYamlLdCfg.strCmdArgMonIntf,
@@ -1932,9 +1925,10 @@ tresult_t tcInitEventLog(tc_gd_thread_ctxt_t* pCntx)
  * the program. We will wait until all the threads exit then properly
  * clean up all the threads resources.
  ***************************************************************************/
-void tcInitCleanupRes(mthread_result_t* pExitCode, tc_gd_thread_ctxt_t* pCntx)
+void tcInitCleanupRes(tc_gd_thread_ctxt_t* pCntx)
 {
     tresult_t           _PollSts;
+    mthread_result_t    _tExitCode;
     U32                 _i;
 
     CCURASSERT(pCntx);
@@ -1958,10 +1952,10 @@ void tcInitCleanupRes(mthread_result_t* pExitCode, tc_gd_thread_ctxt_t* pCntx)
                 pCntx->tMibThd.tcplane_snmp_thread,NULL);
 #if TRANSC_TCSIM
         mthreadWaitExit(
-                &(pCntx->tSimThd.tThd), pExitCode);
+                &(pCntx->tSimThd.tThd), &_tExitCode);
         for(_i=0;_i<pCntx->nSimSendWThreadsNum;_i++)
             mthreadWaitExit(
-                &(pCntx->tSimSndThdTbl[_i].tThd), pExitCode);
+                &(pCntx->tSimSndThdTbl[_i].tThd), &_tExitCode);
 #endif /* TRANSC_TCSIM */
 #if PKTGEN_THD
         if(pCntx->tPktGenThd.bIsThdStart)
@@ -1969,11 +1963,11 @@ void tcInitCleanupRes(mthread_result_t* pExitCode, tc_gd_thread_ctxt_t* pCntx)
                     &(pCntx->tPktGenThd.tThd), pExitCode);
 #endif
         mthreadWaitExit(
-                &(pCntx->tHttpPrcThd.tThd), pExitCode);
+                &(pCntx->tHttpPrcThd.tThd), &_tExitCode);
         mthreadWaitExit(
-                &(pCntx->tPktPrcThd.tThd), pExitCode);
+                &(pCntx->tPktPrcThd.tThd), &_tExitCode);
         mthreadWaitExit(
-                &(pCntx->tHealthThd.tThd), pExitCode);
+                &(pCntx->tHealthThd.tThd), &_tExitCode);
         /* Flush the logs */
         do
         {

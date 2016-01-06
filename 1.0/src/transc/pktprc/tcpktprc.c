@@ -560,18 +560,35 @@ CCUR_PROTECTED(tresult_t)
 tcPktPrcCkIpBlacklist(tc_pktprc_thread_ctxt_t * pCntx,
         tc_pktdesc_t * pPktDesc)
 {
-    uint32_t ip;
-    ip  = pPktDesc->ipHdr.tSrcIP.ip.v4.octet[0] << 24;
-    ip |= pPktDesc->ipHdr.tSrcIP.ip.v4.octet[1] << 16;
-    ip |= pPktDesc->ipHdr.tSrcIP.ip.v4.octet[2] << 8;
-    ip |= pPktDesc->ipHdr.tSrcIP.ip.v4.octet[3];
-    if(blacklisted(ip))
+    tresult_t                       _result;
+    U32                             _i;
+    U32                             _nSrcIPHashVal;
+
+    CCURASSERT(pCntx);
+    CCURASSERT(pPktDesc);
+
+    /* convert to hash value for fast lookup */
+    _result = tcUtilASymHashGet(&_nSrcIPHashVal,&(pPktDesc->ipHdr.tSrcIP));
+    if(ESUCCESS == _result)
     {
-        evLogTrace(pCntx->pQPktProcToBkgrnd, evLogLvlDebug, &(pCntx->tLogDescSys),
-            "blacklisted ip: %s", str_ip(ip));
-        return EIGNORE;
+        for(_i=0;_i < pCntx->nHashIpAddrBlkListTbl;_i++)
+        {
+            /* Found a match */
+            if(pCntx->pHashIpAddrBlkListTbl[_i] == _nSrcIPHashVal)
+            {
+                /* Increment request from cache server */
+                pCntx->nPcapIgnGetReqFrmCacheSrvr++;
+                pCntx->nPcapPktIgnored++;
+                _result = EIGNORE;
+                break;
+            }
+        }
     }
-    return ESUCCESS;
+    /* Increment get request error */
+    else
+        pCntx->nGetReqErr++;
+
+    return _result;
 }
 
 /***************************************************************************

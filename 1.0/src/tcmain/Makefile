@@ -28,7 +28,7 @@ LIBLFDS_SRCDIR  	= $(TC_HOME)/src/liblfds/liblfds611
 #-------------------------------------------------------------------------
 # Library Dependencies
 #-------------------------------------------------------------------------
-LDLIBLINK  += $(TC_HOME)/lib/tcplane_snmp.o $(TC_HOME)/lib/blacklist.o
+LDLIBLINK  += $(TC_HOME)/lib/tcplane_snmp.o
 LDLIBLINK  += $(TC_HOME)/lib/libtransc.a
 LDLIBLINK  += $(TC_HOME)/lib/libmisc.a 
 LDLIBLINK  += /usr/local/lib/libzlog.a

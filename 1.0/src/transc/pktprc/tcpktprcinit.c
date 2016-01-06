@@ -16,12 +16,6 @@
 
 #include "pktprc.h"
 #include "tcmapintf.h"
-
-//*************** external functions **********************
-extern void clear_blacklist(void);
-extern void populate_blacklist(const char * s);
-extern void print_blacklist(void);
-
 /**************** PRIVATE Functions **********************/
 
 /***************************************************************************
@@ -46,19 +40,6 @@ _tcPktProcBlkListTbl(
     CCURASSERT(pCntx);
     CCURASSERT(pLdCfg);
 
-    clear_blacklist();
-
-    // load redirect addresses first.
-    for(_i=0;_i<pCntx->tIntfX.nIntfMapTblTotal;_i++)
-        populate_blacklist(pCntx->tIntfX.tIntfMapTbl[_i].pMonIntf->strRedirAddr);
-
-    // load remaining blacklist ips.
-    populate_blacklist(pLdCfg->strCmdArgIpBlackList);
-    return ESUCCESS;
-
-    //*******************************************************************
-    // The code below is obsolete due to the new blacklist class - LCS.
-    //*******************************************************************
     do
     {
         _result = ESUCCESS;
@@ -718,7 +699,6 @@ tcPktProcConfigInitLoadableRes(
          _sts = _tcPktProcBlkListTbl(pCntx,pLdCfg);
          if( ESUCCESS != _sts)
          {
-printf("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy\n");
              evLogTrace(
                    pCntx->pQPktProcToBkgrnd,
                    evLogLvlError,

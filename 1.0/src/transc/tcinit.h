@@ -32,6 +32,20 @@ extern "C" {
 #include "tcutils.h"
 #include "tctemp.h"
 
+enum _tcinit_error_e
+{
+    tcInitErrorNone=0,
+    tcInitErrorGeneric,
+    tcInitErrorLoadConfig,
+    tcInitErrorLoadProcessDaemon,
+    tcInitErrorLoadResourceInit,
+    tcInitErrorLoadThreadExec,
+    tcInitErrorReadConsoleInput,
+    tcInitErrorEventLog
+};
+typedef enum _tcinit_error_e
+             tcinit_error_e;
+
 struct _tc_gd_thread_ctxt_s
 {
     /* Common Mutex for all threads */
@@ -71,7 +85,7 @@ struct _tc_gd_thread_ctxt_s
     tc_sim_thread_ctxt_t        tSimThd;
     /* Sim/Simsnd thread */
     tc_simsnd_thread_ctxt_t     tSimSndThdTbl[TRANSC_SIM_THD_MAX];
-} 
+};
 
 typedef struct _tc_gd_thread_ctxt_s tc_gd_thread_ctxt_t;
 
@@ -81,7 +95,7 @@ tresult_t tcInitRunThreads(tc_gd_thread_ctxt_t* pCntx);
 
 tresult_t tcInitDaemonize(BOOL bDaemonize);
 
-tresult_t tcInitReadFromConsole(tc_ldcfg_t* pCfg, int argc, char * argv[]);
+tresult_t tcInitReadFromConsole(tc_ldcfg_t* pCfg, S32 argc, char * argv[]);
 
 tresult_t tcInitLoadConfigFiles(tc_gd_thread_ctxt_t* pCntx);
 
@@ -89,7 +103,7 @@ void tcInitUsageMsgPrintBanner(void);
 
 void tcInitIsSwitchDaemonMode(BOOL bDaemonize);
 
-void tcInitCleanupRes(mthread_result_t* pExitCode, tc_gd_thread_ctxt_t* pCntx);
+void tcInitCleanupRes(tc_gd_thread_ctxt_t* pCntx);
 
 tresult_t tcInitEventLog(tc_gd_thread_ctxt_t* pCntx);
 

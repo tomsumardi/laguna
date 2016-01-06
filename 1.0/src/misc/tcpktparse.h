@@ -107,9 +107,7 @@ struct _tc_iphdr_l3_s
 {
     U16                     nEthType;
     tc_iphdr_ipaddr_t       tSrcIP;
-    U32                     nSrcIPHash;
     tc_iphdr_ipaddr_t       tDstIP;
-    U32                     nDstIPHash;
 };
 typedef struct _tc_iphdr_l3_s
                tc_iphdr_l3_t;
@@ -155,10 +153,6 @@ struct _tc_pktdesc_s
 };
 typedef struct _tc_pktdesc_s
                tc_pktdesc_t;
-
-CCUR_PROTECTED(tresult_t)
-tcPktParse(
-        tc_pktdesc_t*               pPktDesc);
 
 CCUR_PROTECTED(tresult_t)
 tcPktParseTCP(

@@ -83,7 +83,7 @@ Firstly, create a working sandbox into which download and build the libraries an
     cd liblfds6.1.1/liblfds611
     mkdir bin; mkdir obj
     make –f makefile.linux ardbg
-    sudo cp inc/liblfds611.h usr/local/include
+    sudo cp inc/liblfds611.h /usr/local/include
     sudo cp bin/liblfds611.a /usr/local/lib
   
 **8) [C Prototyping Tools Library provides cp_mempool](http://cprops.sourceforge.net)**

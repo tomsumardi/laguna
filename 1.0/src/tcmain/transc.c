@@ -18,7 +18,7 @@
 
 //*********************************************************************************
 //*********************************************************************************
-void transcUsageMsgPrint(void)
+void _transcUsageMsgPrint(void)
 {
     tcInitUsageMsgPrintBanner();
     tcPrintSysLog(LOG_INFO,"USAGE:  transc [-<flag> [<val>],...]\n");
@@ -51,39 +51,74 @@ int main(int argc, char *argv[])
 {
     tresult_t               _result;
     tc_gd_thread_ctxt_t*    _pGlbThdCntx;
+    U16                     _sts = tcInitErrorNone;
 
-	while(1)
-	{
+    do
+    {
         _pGlbThdCntx = tcInitGetGlobalThdContext();
         /* Command line will overwrites config file values. */
-        _result = tcInitReadFromConsole(&(_pGlbThdCntx->tMibThd.tConfig), argc, argv);
+        _result = tcInitReadFromConsole(
+                &(_pGlbThdCntx->tMibThd.tConfig),argc,argv);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorReadConsoleInput;
             break;
-        _result = tcInitEventLog(_pGlbThdCntx);
+        }
+        _result =
+                tcInitEventLog(_pGlbThdCntx);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorEventLog;
             break;
-        _result = tcInitDaemonize(_pGlbThdCntx->tMibThd.tConfig.bDaemonize);
+        }
+        _result = tcInitDaemonize(
+                _pGlbThdCntx->tMibThd.tConfig.bDaemonize);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorLoadProcessDaemon;
             break;
+        }
         _result =
                 tcInitLoadConfigFiles(_pGlbThdCntx);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorLoadConfig;
             break;
+        }
         /* Perform all resource Initialization */
         _result = tcInitRes(_pGlbThdCntx);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorLoadResourceInit;
             break;
+        }
         /* Run Thread(s) */
         _result = tcInitRunThreads(_pGlbThdCntx);
         if(ESUCCESS != _result)
+        {
+            _sts = tcInitErrorLoadThreadExec;
             break;
+        }
         /* Signal the parent process that it is now OK to exit if
          * in daemon mode. Otherwise just print banner and continue on.
          */
-        tcInitIsSwitchDaemonMode(_pGlbThdCntx->tMibThd.tConfig.bDaemonize);
+        tcInitIsSwitchDaemonMode(
+                _pGlbThdCntx->tMibThd.tConfig.bDaemonize);
         tcBkgrndThreadEntry(&(_pGlbThdCntx->tBkGnThd));
-	}
-    // Cleanup all resources
-    // tcInitCleanupRes(&_tThdExitSts, _pGlbThdCntx);
-	exit(0);
+    }while(FALSE);
+
+    if(tcInitErrorNone != _sts)
+    {
+        /* add below to sysVinit in the future */
+        if(tcInitErrorReadConsoleInput == _sts ||
+           tcInitErrorEventLog == _sts)
+            _sts = tcInitErrorGeneric;
+        _transcUsageMsgPrint();
+    }
+    /* It is a good practice to cleanup resources
+     * before exiting to see if there are memory leaks
+     */
+    tcInitCleanupRes(_pGlbThdCntx);
+
+    exit(_sts);
 }

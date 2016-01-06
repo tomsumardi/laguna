@@ -76,13 +76,13 @@ transc_dbg:
 	@if [ -e "$(TRANSC_SRCDIR)/Makefile" ]; then \
 	    $(MAKE) $(MAKEOPTS) -C $(TRANSC_SRCDIR) $(MAKEDEFS) debug; fi
 	@cd $(TRANSC_SRCDIR)/mib; make -f Makefile.cpp
-	@cd $(TRANSC_SRCDIR)/ipblacklist; make -f Makefile.cpp
+#	@cd $(TRANSC_SRCDIR)/ipblacklist; make -f Makefile.cpp
 
 transc_rel:
 	@if [ -e "$(TRANSC_SRCDIR)/Makefile" ]; then \
 	    $(MAKE) $(MAKEOPTS) -C $(TRANSC_SRCDIR) $(MAKEDEFS) release; fi
 	@cd $(TRANSC_SRCDIR)/mib; make -f Makefile.cpp
-	@cd $(TRANSC_SRCDIR)/ipblacklist; make -f Makefile.cpp
+#	@cd $(TRANSC_SRCDIR)/ipblacklist; make -f Makefile.cpp
 
 transc_clean:
 	@if [ -e "$(TRANSC_SRCDIR)/Makefile" ]; then \
