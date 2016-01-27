@@ -2,6 +2,19 @@
 
 Laguna is a transparent caching control plane providing IP/MPLS traffic monitoring & analysis, cache definition management & traffic matching.
 
+Agenda:
+
+- fix clutter of C files that are not being used
+- Separate the RAW packet generation for TCP sequence prediction and RST engine as separate component
+- Separate Packet processing, HTTP processing and Packet injection into seperate threads connected by lockfree queues
+- easy installation and deployment
+
+Tom Sumardi
+
+
+
+
+
 **Solution Overview**
 
 Service providers and enterprises are facing a large and growing amount of over-the-top (OTT) traffic traversing their IP networks. During peak viewing periods nearly two-thirds of all Internet traffic is related to OTT streaming video services like those operated by Netflix, Google, Amazon, and Apple. Left unmanaged, this traffic can lead to network congestion, lower performing Internet services for consumers, and higher peering costs for service providers.
